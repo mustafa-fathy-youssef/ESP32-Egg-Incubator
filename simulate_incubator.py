@@ -4,7 +4,9 @@ Simulates temperature control, heater hysteresis, safety cutoffs, and health sco
 """
 
 import time
+
 from test_incubator import IncubatorSimulator
+
 
 def run_simulation():
     print("🥚 Starting ESP32 Egg Incubator Simulation...")
@@ -22,7 +24,7 @@ def run_simulation():
 
     for i, temp in enumerate(profile):
         sim.update(temp)
-        print(f"{i+1:<5} | {temp:<10.2f} | {'ON' if sim.heater_on else 'OFF':<8} | {str(sim.safe_mode):<10} | {str(sim.emergency_mode):<10}")
+        print(f"{i+1:<5} | {temp:<10.2f} | {'ON' if sim.heater_on else 'OFF':<8} | {sim.safe_mode!s:<10} | {sim.emergency_mode!s:<10}")
         time.sleep(0.05)
 
     print("-" * 60)

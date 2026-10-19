@@ -13,7 +13,7 @@ Tests:
 """
 
 import pytest
-import math
+
 
 class IncubatorSimulator:
     def __init__(self, target=37.7, low=37.4, high=37.8, critical=39.5, emergency=39.8):
@@ -138,26 +138,22 @@ class SensorTestSimulator:
         self.i2c_devices_found = 1        # LCD at 0x27
 
     def calculate_scores(self):
-        # 1. Authenticity Score
         auth_score = 100
         for code in self.family_codes:
             if code != 0x28:
                 auth_score -= 25
         auth_score = max(0, auth_score)
 
-        # 2. Divergence Score
         div_score = 100
         if len(self.sensor_temps) >= 2:
             delta = abs(self.sensor_temps[0] - self.sensor_temps[1])
             if delta > 0.5:
                 div_score = 50
 
-        # 3. DHT Score
         dht_score = 100
         if self.dht_humidity < 0 or self.dht_humidity > 100:
             dht_score = 0
 
-        # 4. I2C Score
         i2c_score = 100 if self.i2c_devices_found > 0 else 0
 
         overall = (auth_score + div_score + dht_score + i2c_score) // 4
@@ -232,9 +228,8 @@ def test_sensor_testing_package_profiling():
     assert scores["i2c"] == 100
     assert scores["overall"] == 100
 
-    # Test with simulated clone sensor and high divergence
-    st_sim.family_codes = [0x28, 0x10]  # One clone sensor
-    st_sim.sensor_temps = [37.7, 38.5]  # Delta = 0.8°C (> 0.5°C threshold)
+    st_sim.family_codes = [0x28, 0x10]
+    st_sim.sensor_temps = [37.7, 38.5]
     scores_faulty = st_sim.calculate_scores()
     assert scores_faulty["authenticity"] == 75
     assert scores_faulty["divergence"] == 50
