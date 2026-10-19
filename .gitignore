@@ -1,0 +1,27 @@
+# PlatformIO
+.pio/
+.vscode/
+build/
+*.o
+*.elf
+*.bin
+*.hex
+
+# Arduino
+secrets.h
+
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+venv/
+
+# OS / Temporary
+.DS_Store
+Thumbs.db
+appending.txt
+comitted.txt
+commited.txt
+project_tress.txt
+pylint_test.py
