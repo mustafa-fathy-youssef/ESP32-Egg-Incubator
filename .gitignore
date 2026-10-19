@@ -25,3 +25,7 @@ comitted.txt
 commited.txt
 project_tress.txt
 pylint_test.py
+pio_compile_log*.txt
+_backup_*/
+.pio/
+src/secrets.h
