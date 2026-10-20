@@ -49,12 +49,16 @@ extern Preferences prefReset;
 extern bool monitorEnabled;
 extern unsigned long lastMonitorMs;
 
+#ifndef DEBOUNCE_RING
+#define DEBOUNCE_RING 4
+#endif
+
 // [FIX] from telegram_alerts.cpp - used by telegram_bot.cpp
 extern bool lastEmergState;
 extern bool bootReportSent;
 extern unsigned long lastDailyReportDay;
-extern uint8_t recentCodes[4];
-extern unsigned long recentTimes[4];
+extern uint8_t recentCodes[DEBOUNCE_RING];
+extern unsigned long recentTimes[DEBOUNCE_RING];
 extern uint8_t recentIdx;
 
 // [FIX] prototypes

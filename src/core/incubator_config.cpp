@@ -1,5 +1,9 @@
 #include "incubator_internal.h"
 
+SystemConfig config;
+Preferences prefConfig;
+Preferences pref;
+
 void setDefaultConfig() {
     config.targetTemp        = 37.7f;
     config.tempLow           = 37.4f;

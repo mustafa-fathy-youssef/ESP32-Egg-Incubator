@@ -54,6 +54,7 @@ struct DiagBlob {
     float dayMeanDev[30];
     uint8_t dayHealth[30];
     uint8_t dayIdx;
+    uint8_t dayCountFilled;
     uint32_t lastDayStart;
 
     FaultRec savedFaults[8];
