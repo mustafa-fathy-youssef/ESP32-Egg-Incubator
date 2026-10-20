@@ -91,20 +91,7 @@ bool  smootherInitialized = false;
 // ============================================================
 // Dynamic Configuration (NVS)
 // ============================================================
-struct SystemConfig {
-    float targetTemp;           // 37.7
-    float tempLow;              // target - 0.3
-    float tempHigh;             // target + 0.1
-    float tempCritical;         // 39.5
-    float tempEmergency;        // 39.8
-    unsigned long turnerOffTime; // 60000
-    unsigned long turnerOnTime;  // 15000
-    unsigned long heaterMaxRuntime; // 30000
-    unsigned long nvsSaveInterval;  // 60 (ثواني)
-};
-
-SystemConfig config;
-Preferences prefConfig;
+// SystemConfig, config, and prefConfig defined in incubator_config.cpp / incubator_internal.h
 
 // قيم افتراضية (تُستخدم عند أول تشغيل)
 

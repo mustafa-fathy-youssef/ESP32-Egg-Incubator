@@ -22,15 +22,7 @@
 
 
 
-struct ResetStats {
-    uint32_t totalCount;
-    uint32_t lastCount;
-    uint32_t lastReasonCode;
-    unsigned long lastBootTime;
-    unsigned long lastDay;
-    uint32_t dailyCount;
-    uint32_t wdtCount, panicCount, brownoutCount, poweronCount, otherCount;
-};
+// ResetStats defined in telegram_internal.h
 
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(SECRET_TG_BOT_TOKEN, secured_client);
@@ -77,9 +69,9 @@ static const unsigned long TG_TIMEOUT_MS = 2500UL;
 static const unsigned long DEBOUNCE_MS   = 3600000UL;
 
 #define DEBOUNCE_RING 4
-static uint8_t  recentCodes[DEBOUNCE_RING] = {0xFF, 0xFF, 0xFF, 0xFF};
-static unsigned long recentTimes[DEBOUNCE_RING] = {0};
-static uint8_t  recentIdx = 0;
+uint8_t  recentCodes[DEBOUNCE_RING] = {0xFF, 0xFF, 0xFF, 0xFF};
+unsigned long recentTimes[DEBOUNCE_RING] = {0};
+uint8_t  recentIdx = 0;
 
 static bool isDebounced(uint8_t code) {
     unsigned long now = millis();
@@ -96,8 +88,8 @@ static void recordSent(uint8_t code) {
     recentIdx = (recentIdx + 1) % DEBOUNCE_RING;
 }
 
-static bool lastEmergState = false;
-static unsigned long lastDailyReportDay = 0;
+bool lastEmergState = false;
+unsigned long lastDailyReportDay = 0;
 static char msgBuf[180];
 
 extern bool emergencyMode;
@@ -105,7 +97,7 @@ extern unsigned long cycleCount;
 extern float rawTemperature;
 
 // ---- متغير لإرسال تقرير الإقلاع التلقائي (مرة واحدة فقط، غير حاجب) ----
-static bool bootReportSent = false;
+bool bootReportSent = false;
 
 // ---- Strip characters that would break our simple JSON body ----
 static void sanitizeTgText(char* s, size_t cap) {
@@ -117,7 +109,7 @@ static void sanitizeTgText(char* s, size_t cap) {
 }
 
 // ---- Single HTTP attempt; used by tgSend with one retry ----
-static bool tgSendOnce(const char* text) {
+bool tgSendOnce(const char* text) {
     if (WiFi.status() != WL_CONNECTED) {
         Serial.println("❌ Telegram FAIL: WiFi NOT connected!");
         return false;

@@ -29,3 +29,39 @@ pio_compile_log*.txt
 _backup_*/
 .pio/
 src/secrets.h
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# Build logs
+logs/
+pio_compile_log*.txt
+COMPILE_LOG.txt
+
+# Backups
+_backup_*/
+_backup_phase*/
+
+# Secrets
+src/secrets.h
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Audits (keep locally, not in repo)
+FILES_DUMP/
+PROJECT_AUDIT.md
+VERSION2_FULL_AUDIT.md
+generate_audit.py
+generate_version2_audit.py
+FIX_PLAN.md
+fix_all.py
+flatten.py
+VERIFICATION.md

@@ -25,28 +25,20 @@ void saveDiagnosticsBlob();
 // تعريف الهياكل الأساسية (في النطاق العام)
 // ============================================================
 
-// ThermalStats: Welford online mean/variance
-struct ThermalStats
-{
-    uint32_t n;
-    float mean;
-    float m2; // sum of squared differences from mean
-    float minT;
-    float maxT;
-};
+// ThermalStats defined in diagnostics_internal.h
 
 
 // ============================================================
 // المرحلة النهائية: المصفوفات اليومية وحساب التدهور
 // ============================================================
-static float dayDeltaAvg[30] = {0};
-static float dayDuty[30] = {0};
-static float dayOverAvg[30] = {0};
-static float dayMeanDev[30] = {0};
-static uint8_t dayHealth[30] = {0};
-static uint8_t dayIdx = 0;           // اليوم الحالي (0-29)
-static uint8_t dayCountFilled = 0;   // grows to 30 then stays (sliding window size)
-static unsigned long lastDayStart = 0; // وقت بداية اليوم الحالي (millis)
+float dayDeltaAvg[30] = {0};
+float dayDuty[30] = {0};
+float dayOverAvg[30] = {0};
+float dayMeanDev[30] = {0};
+uint8_t dayHealth[30] = {0};
+uint8_t dayIdx = 0;           // اليوم الحالي (0-29)
+uint8_t dayCountFilled = 0;   // grows to 30 then stays (sliding window size)
+unsigned long lastDayStart = 0; // وقت بداية اليوم الحالي (millis)
 
 // ---- عدادات المشغلات (Actuator) ----
 static uint32_t diagSwitchCount[4] = {0, 0, 0, 0};  // 0=Fan, 1=Turner, 2=Heater, 3=Evaporator
@@ -59,66 +51,14 @@ static unsigned long lastOnStart[4] = {0, 0, 0, 0};
 // ============================================================
 // هيكل التخزين المزدوج مع CRC (Dual‑blob)
 // ============================================================
-#pragma pack(push, 1)
-struct DiagBlob {
-    uint32_t magic;          // 0xABADBABE
-    uint32_t version;        // 1
-    uint32_t timestamp;      // وقت الحفظ (millis)
-    uint16_t crc;            // CRC16 للتحقق
+// DiagBlob defined in diagnostics_internal.h
 
-    // ---- الإحصائيات الأساسية ----
-    ThermalStats thermal;
-    float bandTime[6];
-    uint32_t totalSamples;
-    uint32_t heaterCycles;
-    uint32_t diagUptimeSec;
-
-    // ---- عدادات إعادة التشغيل ----
-    uint32_t resetUnexpected;
-    uint32_t resetWdt;
-    uint32_t resetBrownout;
-
-    // ---- انقطاع الحساسات ----
-    uint32_t sensorDisconnectCount;
-
-    // ---- التجاوز (Overshoot) ----
-    uint32_t overCount;
-    float overSum;
-    float overMax;
-    uint32_t overHist[20];
-
-    // ---- فرق الحساسات (Delta) ----
-    uint32_t deltaN;
-    float deltaSum;
-    float deltaMax;
-
-    // ---- أداء السخان ----
-    uint32_t heaterOnTotalMs;
-    uint32_t onTimeSumMs;
-    uint32_t onTimeCount;
-    uint32_t invalidReads;
-    uint32_t tempHist[150];
-
-    // ---- المصفوفات اليومية (30 يوم) ----
-    float dayDeltaAvg[30];
-    float dayDuty[30];
-    float dayOverAvg[30];
-    float dayMeanDev[30];
-    uint8_t dayHealth[30];
-    uint8_t dayIdx;
-    uint32_t lastDayStart;
-
-    // ---- آخر 8 أعطال للحفظ ----
-    FaultRec savedFaults[8];
-};
-#pragma pack(pop)
-
-static DiagBlob blob;
-static bool blobDirty = false;
-static uint8_t activeBlobIdx = 0; // 0 أو 1
-static const char* BLOB_KEYS[2] = {"diag_blk_a", "diag_blk_b"};
+DiagBlob blob;
+bool blobDirty = false;
+uint8_t activeBlobIdx = 0; // 0 أو 1
+const char* BLOB_KEYS[2] = {"diag_blk_a", "diag_blk_b"};
 // ============================================================
-static unsigned long lastSaveTime = 0;
+unsigned long lastSaveTime = 0;
 // إعلان الدوال الخارجية (معرفة في Memory3.ino)
 // ============================================================
 void logEvent(const char* message);
@@ -132,33 +72,21 @@ extern DSTemperatureSensor dsSensors[2];
 // ============================================================
 
 // تعريف المتغير العام thermal (يستخدم في كل مكان)
-static ThermalStats thermal = {0, 0.0f, 0.0f, 999.0f, -999.0f};
+ThermalStats thermal = {0, 0.0f, 0.0f, 999.0f, -999.0f};
 // ============================================================
 // Phase 2: Overshoot Tracker & Sensor Delta
 // ============================================================
 
 // Heater Overshoot State Machine
-struct HeaterOvershoot
-{
-    bool armed;
-    unsigned long offMs;
-    float offTemp;
-    float peak;
-    uint32_t samples;
-};
-static HeaterOvershoot overshoot = {false, 0, 0.0f, 0.0f, 0};
+// HeaterOvershoot defined in diagnostics_internal.h
+HeaterOvershoot overshoot = {false, 0, 0.0f, 0.0f, 0};
 
 // Overshoot histogram (bins of 0.05°C, from 0.0 to 1.0°C)
 static uint32_t overHist[20] = {0};
 
 // Sensor Delta stats (difference between DS18B20 sensors)
-struct SensorDelta
-{
-    uint32_t n;
-    float sum;
-    float max;
-};
-static SensorDelta sensorDelta = {0, 0.0f, 0.0f};
+// SensorDelta defined in diagnostics_internal.h
+SensorDelta sensorDelta = {0, 0.0f, 0.0f};
 
 // Running stats for overshoot
 static uint32_t overCount = 0;
@@ -187,7 +115,7 @@ static const unsigned long SAVE_INTERVAL_MS = 10000UL; // 10 ثواني
 // Phase 3: Sensor Disconnect Counter
 // ============================================================
 uint32_t sensorDisconnectCount = 0;
-static bool lastSensorDisconnectState[2] = {false, false};
+bool lastSensorDisconnectState[2] = {false, false};
 
 // ============================================================
 // Phase 3: Fault Ring Buffer (32 events)
@@ -225,7 +153,7 @@ static float    cycleBaselineOverSum      = 0.0f;
 // تعريف FaultRec مستخدم هنا (من النطاق العام أعلاه)
 FaultRec faultRing[FAULT_RING_SIZE];
 uint8_t faultHead = 0;
-static uint32_t faultCount = 0;
+uint32_t faultCount = 0;
 
 // Fault codes
 #define FAULT_OVERSHOOT_HIGH 0x05
@@ -237,7 +165,7 @@ static uint32_t faultCount = 0;
 #define FAULT_BROWNOUT_RESET 0x0C
 
 // Preferences object (kept open)
-static Preferences prefDiag;
+Preferences prefDiag;
 static Preferences prefLog;
 
 // ============================================================
@@ -262,7 +190,7 @@ static int getBandIndex(float temp)
 // ============================================================
 // CRC16 (CCITT) بسيطة وسريعة
 // ============================================================
-static uint16_t calculateCRC16(const uint8_t* data, size_t len) {
+uint16_t calculateCRC16(const uint8_t* data, size_t len) {
     uint16_t crc = 0xFFFF;
     for (size_t i = 0; i < len; i++) {
         crc ^= (uint16_t)data[i] << 8;

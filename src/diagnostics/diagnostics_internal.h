@@ -54,18 +54,24 @@ struct DiagBlob {
     float dayMeanDev[30];
     uint8_t dayHealth[30];
     uint8_t dayIdx;
-    uint8_t dayCountFilled;
+    uint32_t lastDayStart;
+
+    FaultRec savedFaults[8];
 };
 #pragma pack(pop)
 
 struct HeaterOvershoot {
-    bool active;
+    bool armed;
+    unsigned long offMs;
+    float offTemp;
     float peak;
-    unsigned long startTime;
+    uint32_t samples;
 };
 
 struct SensorDelta {
-    float maxDelta;
+    uint32_t n;
+    float sum;
+    float max;
 };
 
 // Global shared state for diagnostics modules
@@ -83,11 +89,17 @@ extern uint32_t diagOnMs[4];
 extern unsigned long lastOnStart[4];
 
 extern ThermalStats thermal;
-extern HeaterOvershoot currentOvershoot;
-extern SensorDelta currentDelta;
-extern DiagBlob blob1;
-extern DiagBlob blob2;
-extern uint32_t activeBlobIndex;
+extern HeaterOvershoot overshoot;
+extern SensorDelta sensorDelta;
+extern DiagBlob blob;
+extern bool blobDirty;
+extern uint8_t activeBlobIdx;
+extern unsigned long lastSaveTime;
+extern const char* BLOB_KEYS[2];
+extern Preferences prefDiag;
+extern uint32_t faultCount;
+extern bool lastSensorDisconnectState[2];
+extern uint16_t calculateCRC16(const uint8_t* data, size_t len);
 
 bool loadDiagnosticsBlob();
 void saveDiagnosticsBlob();

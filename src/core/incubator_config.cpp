@@ -15,12 +15,7 @@ void setDefaultConfig() {
 // ============================================================
 // Finite State Machine – Safety-Critical Design
 // ============================================================
-typedef enum {
-    STATE_BOOT = 0,
-    STATE_NORMAL,
-    STATE_SAFE,
-    STATE_EMERGENCY
-} SystemState;
+// SystemState defined in incubator_internal.h
 
 SystemState currentState = STATE_BOOT;
 unsigned long stateEnterMs = 0;
@@ -51,13 +46,7 @@ int dhtPins[MAX_HUMIDITY_SENSORS] = {PIN_DHT};
 HumiditySensor humiditySensors[MAX_HUMIDITY_SENSORS];
 
 // ---- إدارة المرطب (Evaporator) ----
-struct EvaporatorController {
-    bool state;                     // حالة التشغيل الفعلية
-    unsigned long lastToggleTime;   // آخر تغيير للحالة
-    unsigned long onDuration;       // مدة التشغيل في الوضع الآمن (ms)
-    unsigned long offDuration;      // مدة الإيقاف في الوضع الآمن (ms)
-    bool useSafeTimedMode;          // هل نستخدم الدورة الزمنية الآمنة؟
-};
+// EvaporatorController defined in incubator_internal.h
 
 EvaporatorController evaporator = {
     false, 0, 300000UL, 600000UL, false

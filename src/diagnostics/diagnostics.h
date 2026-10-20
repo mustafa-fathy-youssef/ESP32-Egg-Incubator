@@ -84,9 +84,9 @@ struct FaultRec {
 };
 
 // جعل مصفوفة الأعطال ومؤشرها متاحة للاستخدام خارج diagnostics.cpp
-extern FaultRec faultRing[];
-extern uint8_t faultHead;
 #define FAULT_RING_SIZE 32
+extern FaultRec faultRing[FAULT_RING_SIZE];
+extern uint8_t faultHead;
 
 // ============================================================
 // تعريف مستويات الأخطاء
