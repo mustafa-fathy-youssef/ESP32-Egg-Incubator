@@ -124,7 +124,6 @@ class TempRampTracker {
 
     void stopHeatingCycle(float currentTemp) {
       if (isHeating) {
-        // Update peak one last time
         if (currentTemp > peakTemp) peakTemp = currentTemp;
 
         if (targetReachedTime != 0) {

@@ -28,7 +28,7 @@ float GenericSensor::getSmoothedReading() {
   // 3. Smoothing Logic
   total = total - readings[readIndex]; 
   readings[readIndex] = newReading;    
-  total = total + newReading; // Slightly optimized
+  total = total + newReading; 
   readIndex = (readIndex + 1) % numReads;
 
   return total / (float)numReads;
@@ -39,7 +39,7 @@ void GenericSensor::begin(float fallbackValue) {
   if (isnan(initialRead) || initialRead < minValidValue || initialRead > maxValidValue) {
     initialRead = fallbackValue; 
   }
-  total = 0.0; // Reset total just in case
+  total = 0.0; 
   for (int i = 0; i < numReads; i++) {
     readings[i] = initialRead;
     total += initialRead;
@@ -67,7 +67,6 @@ float DS18B20Sensor::readRaw() {
 // DHT22Sensor (Child) Implementation
 // ==========================================
 DHT22Sensor::DHT22Sensor(int pin, DHTType type, int _numReads) 
-  // If reading Temp, bounds are (-40 to 80). If Humidity, bounds are (0 to 100)
   : GenericSensor(_numReads, (type == READ_TEMP ? -40.0 : 0.0), (type == READ_TEMP ? 80.0 : 100.0)), 
     dht(pin, DHT22) {
   readType = type;
@@ -75,13 +74,11 @@ DHT22Sensor::DHT22Sensor(int pin, DHTType type, int _numReads)
 
 void DHT22Sensor::begin() {
   dht.begin();
-  // Fallback: 25.0 for Temp, 50.0 for Humidity
   float fallback = (readType == READ_TEMP) ? 25.0 : 50.0;
   GenericSensor::begin(fallback); 
 }
 
 float DHT22Sensor::readRaw() {
-  // The DHT library caches the values, so calling this multiple times in one loop is safe.
   float t = dht.readTemperature();
   float h = dht.readHumidity();
 
