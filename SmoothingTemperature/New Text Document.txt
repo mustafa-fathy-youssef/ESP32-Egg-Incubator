@@ -1,0 +1,52 @@
+#ifndef SENSORS_H
+#define SENSORS_H
+
+#include <Arduino.h>
+#include <DHT.h>
+
+// Enum to tell the DHT22 what to read
+enum DHTType { READ_TEMP, READ_HUMIDITY };
+
+// ==========================================
+// 1. THE PARENT CLASS (Generic)
+// ==========================================
+class GenericSensor {
+  protected:
+    int numReads;
+    static const int MAX_READS = 10; 
+    float readings[MAX_READS];
+    int readIndex;
+    float total;
+    float minValidValue;
+    float maxValidValue;
+
+  public:
+    GenericSensor(int _numReads = 5, float _min = 0.0, float _max = 100.0);
+    
+    virtual float readRaw() = 0;
+    float getSmoothedReading();
+    void begin(float fallbackValue = 50.0);
+};
+
+// ==========================================
+// 2. THE SUB-CLASSES
+// ==========================================
+class AnalogSensor : public GenericSensor {
+  private:
+    int pin;
+  public:
+    AnalogSensor(int _pin, int _numReads = 5);
+    float readRaw() override;
+};
+
+class DHT22Sensor : public GenericSensor {
+  private:
+    DHT dht;
+    DHTType readType;
+  public:
+    DHT22Sensor(int pin, DHTType type, int _numReads = 5);
+    void begin() override;
+    float readRaw() override;
+};
+
+#endif
